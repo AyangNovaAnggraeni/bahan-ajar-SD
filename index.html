@@ -4,89 +4,111 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Petualangan Digital Anak Hebat!</title>
-    <!-- Google Fonts: Comfortaa & Fredoka (Sangat ramah anak) -->
+    <!-- Google Fonts: Comfortaa & Fredoka -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@500;700&family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- FontAwesome & Tailwind CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Canvas Confetti Library for Game reward -->
+    <!-- Canvas Confetti Library -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     
     <style>
         body {
             font-family: 'Fredoka', sans-serif;
-            background: radial-gradient(circle, #e0f2fe 0%, #bae6fd 100%);
+            background: radial-gradient(circle at top left, #f5f3ff 0%, #e0e7ff 50%, #fae8ff 100%);
             overflow-x: hidden;
+            transition: background 0.3s ease;
         }
         h1, h2, h3, h4 {
             font-family: 'Comfortaa', sans-serif;
         }
-        /* Custom slide navigation transitions */
+        /* Slide transitions */
         .slide {
             display: none;
-            transition: all 0.5s ease-in-out;
+            opacity: 0;
+            transform: scale(0.97) translateY(10px);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
         .slide.active {
             display: flex;
-            animation: slideIn 0.5s forwards;
+            opacity: 1;
+            transform: scale(1) translateY(0);
         }
-        @keyframes slideIn {
-            from { opacity: 0; transform: scale(0.95) translateY(10px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
-        }
-        /* Heartbeat animations for cute visual alerts */
+        /* Custom animations */
         .pulse-slow {
-            animation: pulse 2s infinite;
+            animation: pulse 2.5s infinite;
         }
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+            50% { transform: scale(1.04); }
         }
-        /* Floating animations for cute background visuals */
         .float-slow {
             animation: float 4s ease-in-out infinite;
         }
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+            50% { transform: translateY(-8px); }
         }
-        /* Hide scrollbars but keep functionality */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
+
+        /* Presentation Mode Overrides */
+        body.presentation-active {
+            background: #0f172a !important; /* Dark sleek slate for screen contrast */
+            padding: 0 !important;
+            margin: 0 !important;
+            overflow: hidden;
         }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+        body.presentation-active #raw-header,
+        body.presentation-active #raw-hints {
+            display: none !important;
+        }
+        body.presentation-active main {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            max-width: 100vw !important;
+            max-height: 100vh !important;
+            margin: 0 !important;
+            border: none !important;
+            border-radius: 0 !important;
+            box-shadow: none !important;
+            z-index: 9999;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between p-4 md:p-6 select-none">
+<body class="min-h-screen flex flex-col justify-between p-4 md:p-6 select-none transition-all duration-300">
 
-    <!-- Top Progress Indicator Bar -->
-    <header class="w-full max-w-5xl mx-auto flex items-center justify-between bg-white/80 backdrop-blur-md py-3 px-6 rounded-full shadow-lg border-2 border-white/40 z-10">
+    <!-- Top Progress Indicator Bar (Raw/Standard Mode) -->
+    <header id="raw-header" class="w-full max-w-5xl mx-auto flex items-center justify-between bg-white/70 backdrop-blur-md py-3.5 px-6 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/50 z-10 mb-2 transition-all">
         <div class="flex items-center gap-3">
             <span class="text-2xl md:text-3xl float-slow">🚀</span>
             <div>
-                <h1 class="text-sm md:text-base font-bold text-indigo-600">Pahlawan Digital SD</h1>
-                <p class="text-xs text-slate-500 hidden sm:block">Belajar Aman & Bijak Menggunakan Internet</p>
+                <h1 class="text-sm md:text-base font-black text-indigo-600 tracking-wide">Pahlawan Digital SD</h1>
+                <p class="text-[10px] text-slate-500 hidden sm:block">Belajar Aman, Bijak & Berbakat di Internet</p>
             </div>
         </div>
-        <div class="flex items-center gap-4">
-            <!-- Progress Circle/Dots Bar -->
-            <div class="text-xs md:text-sm font-bold bg-indigo-50 text-indigo-600 px-3 py-1.5 rounded-full border border-indigo-200">
-                Slide <span id="current-slide-badge">1</span> / 17
+        <div class="flex items-center gap-3">
+            <!-- Progress badge -->
+            <div class="text-xs font-bold bg-indigo-50 text-indigo-600 px-3.5 py-2 rounded-2xl border border-indigo-100">
+                Slide <span id="current-slide-badge">1</span> / 24
             </div>
             <!-- Progress Line Indicator -->
-            <div class="w-24 md:w-32 bg-slate-100 rounded-full h-3 overflow-hidden border border-slate-200">
+            <div class="w-20 md:w-28 bg-slate-100 rounded-full h-2.5 overflow-hidden border border-slate-200">
                 <div id="progress-line" class="bg-gradient-to-r from-indigo-500 to-purple-500 h-full w-0 transition-all duration-300"></div>
             </div>
+            <!-- Fullscreen Toggle Button -->
+            <button onclick="togglePresentationMode()" title="Tekan 'F' untuk Fullscreen" class="bg-indigo-600 hover:bg-indigo-700 text-white p-2.5 rounded-2xl shadow-md transition-all active:scale-95 flex items-center justify-center text-xs gap-1.5 font-bold">
+                <i class="fa-solid fa-expand text-sm"></i>
+                <span class="hidden md:inline">Mode Presentasi (F)</span>
+            </button>
         </div>
     </header>
 
-    <!-- Main Presentation Workspace (Strict Responsive Container) -->
-    <main class="flex-grow w-full max-w-5xl mx-auto my-6 bg-white rounded-[32px] shadow-2xl border-4 border-white overflow-hidden relative flex flex-col min-h-[500px] md:min-h-[560px]">
+    <!-- Main Presentation Workspace -->
+    <main class="flex-grow w-full max-w-5xl mx-auto my-4 bg-white rounded-[36px] shadow-[0_20px_50px_rgba(99,102,241,0.08)] border-4 border-white overflow-hidden relative flex flex-col min-h-[500px] md:min-h-[560px] transition-all duration-300">
         
         <!-- Interactive Slide Container Wrapper -->
         <div id="slides-wrapper" class="flex-grow flex flex-col justify-center p-6 md:p-10 relative">
@@ -97,7 +119,7 @@
                     <span class="text-7xl md:text-8xl float-slow inline-block">🌎</span>
                     <span class="absolute -top-2 -right-2 text-3xl float-slow" style="animation-delay: 2s;">✨</span>
                 </div>
-                <h2 class="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 leading-tight">
+                <h2 class="text-3xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 leading-tight">
                     Petualangan Hebat<br>di Dunia Digital!
                 </h2>
                 <div class="bg-amber-100 border-2 border-amber-300 rounded-2xl px-6 py-3 max-w-lg mx-auto transform hover:scale-105 transition-all">
@@ -153,7 +175,6 @@
                 </h2>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-center">
-                    <!-- School box vs Internet box visual -->
                     <div class="flex flex-col gap-3">
                         <div class="bg-blue-50 border-2 border-blue-200 rounded-2xl p-4 flex items-center gap-4">
                             <span class="text-4xl">🎒</span>
@@ -172,7 +193,6 @@
                         </div>
                     </div>
 
-                    <!-- Simplified bullet visual -->
                     <div class="bg-indigo-50/50 border-2 border-dashed border-indigo-200 rounded-2xl p-5 flex flex-col gap-3">
                         <h4 class="font-bold text-indigo-900 text-sm md:text-base mb-1">🎯 3 Target Hebat Kita Hari Ini:</h4>
                         <div class="flex items-start gap-3">
@@ -191,10 +211,52 @@
                 </div>
             </div>
 
-            <!-- Slide 4: Apa Itu Internet? -->
+            <!-- Slide 4: Analogi Jalan Raya Raksasa -->
+            <div class="slide flex-col justify-center gap-6 h-full">
+                <h2 class="text-2xl md:text-4xl font-extrabold text-slate-800 border-l-8 border-amber-500 pl-4">
+                    Internet itu Seperti Jalan Raya! 🛣️🚗
+                </h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                    <div class="md:col-span-5 bg-slate-800 rounded-3xl p-4 flex flex-col gap-2 border-4 border-slate-700 shadow-inner relative overflow-hidden h-48 justify-around">
+                        <div class="absolute inset-y-0 left-1/2 w-1 border-r-2 border-dashed border-amber-400"></div>
+                        
+                        <div class="flex justify-between items-center px-4 z-10">
+                            <span class="text-3xl animate-bounce">🚑</span>
+                            <span class="text-xs text-emerald-400 font-mono font-bold bg-slate-900/80 px-2 py-0.5 rounded">Situs Belajar</span>
+                        </div>
+                        <div class="flex justify-between items-center px-4 z-10 flex-row-reverse">
+                            <span class="text-3xl animate-pulse" style="animation-duration: 1.5s;">🏎️💨</span>
+                            <span class="text-xs text-rose-400 font-mono font-bold bg-slate-900/80 px-2 py-0.5 rounded">Bahaya Jalan</span>
+                        </div>
+                        <div class="flex justify-between items-center px-4 z-10">
+                            <span class="text-3xl float-slow">🕵️‍♂️🚗</span>
+                            <span class="text-xs text-amber-300 font-mono font-bold bg-slate-900/80 px-2 py-0.5 rounded">Orang Asing</span>
+                        </div>
+                    </div>
+                    
+                    <div class="md:col-span-7 flex flex-col gap-3">
+                        <h3 class="font-bold text-indigo-950 text-sm md:text-base">Kenapa mirip jalan raya?</h3>
+                        <div class="flex items-start gap-2 text-xs md:text-sm text-slate-700">
+                            <span>🚦</span>
+                            <p><strong>Sangat Ramai & Padat:</strong> Ada miliaran pengguna internet berlalu-lalang setiap detik membawa pesan mereka.</p>
+                        </div>
+                        <div class="flex items-start gap-2 text-xs md:text-sm text-slate-700">
+                            <span>👥</span>
+                            <p><strong>Ada Banyak Orang Asing:</strong> Ada orang baik yang tertib berkendara, tetapi ada juga penjahat yang mengintai.</p>
+                        </div>
+                        <div class="flex items-start gap-2 text-xs md:text-sm text-slate-700">
+                            <span>🚧</span>
+                            <p><strong>Wajib Paham Rambu-rambu:</strong> Agar tidak tersesat atau mengalami kecelakaan, kita harus tahu aturan berkendara yang aman!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 5: Apa Itu Internet? -->
             <div class="slide flex-col items-center justify-center text-center gap-6 h-full">
                 <h2 class="text-2xl md:text-4xl font-extrabold text-slate-800">
-                    Apa Sebenarnya Internet Itu? 🌐
+                    Lalu, Apa Sebenarnya Isi Jalan Raya Itu? 🌐
                 </h2>
                 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mt-2">
@@ -216,11 +278,11 @@
                 </div>
 
                 <div class="bg-indigo-50 border border-indigo-200 px-6 py-3 rounded-full text-indigo-700 font-bold text-xs md:text-sm">
-                    💬 Menurutmu, internet paling sering kamu pakai buat apa?
+                    💬 Menurutmu, kendaraan internet apa yang paling sering kamu pakai?
                 </div>
             </div>
 
-            <!-- Slide 5: Kebaikan Internet -->
+            <!-- Slide 6: Kebaikan Internet -->
             <div class="slide flex-col justify-center gap-6 h-full">
                 <h2 class="text-2xl md:text-4xl font-extrabold text-emerald-700 border-b-4 border-emerald-400 pb-2">
                     ☀️ Kebaikan di Dalam Internet
@@ -248,7 +310,7 @@
                 </div>
             </div>
 
-            <!-- Slide 6: Risiko (Rambu Lampu Merah) -->
+            <!-- Slide 7: Risiko (Rambu Lampu Merah) -->
             <div class="slide flex-col justify-center gap-6 h-full">
                 <div class="flex items-center gap-4">
                     <h2 class="text-2xl md:text-4xl font-extrabold text-red-600 border-l-8 border-red-500 pl-4">
@@ -257,7 +319,6 @@
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                    <!-- Traffic Light Visual Component (SVG-based child illustration) -->
                     <div class="md:col-span-4 flex justify-center">
                         <div class="bg-slate-800 rounded-3xl p-4 flex flex-col gap-3 shadow-lg border-4 border-slate-700 w-24 items-center">
                             <div class="w-12 h-12 rounded-full bg-red-500 shadow-md shadow-red-500/50 flex items-center justify-center text-white font-bold animate-pulse">🔴</div>
@@ -285,14 +346,94 @@
                 </div>
             </div>
 
-            <!-- Slide 7: Aturan Emas 1 (Stop, Think, Click) -->
+            <!-- Slide 8: NEW - Kejadian Tak Terduga (Pornography/Comfort Awareness) -->
+            <div class="slide flex-col justify-center gap-6 h-full">
+                <div class="flex items-center gap-4">
+                    <h2 class="text-2xl md:text-4xl font-extrabold text-orange-600 border-l-8 border-orange-500 pl-4">
+                        Kejadian Tak Terduga di Jalan Raya 🚧
+                    </h2>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
+                    <div class="bg-orange-50 border-2 border-orange-200 rounded-2xl p-5 flex flex-col gap-3 justify-center">
+                        <div class="text-5xl text-center">💥🚗💨</div>
+                        <h3 class="font-extrabold text-orange-950 text-sm md:text-base text-center">"Di jalan raya kadang ada kecelakaan."</h3>
+                        <p class="text-xs md:text-sm text-slate-600 text-center leading-relaxed">
+                            Apakah kita sengaja mencari kecelakaan? <strong>Tidak.</strong><br>
+                            Lalu jika tidak sengaja melihatnya? Kita segera <strong>menjauh</strong> agar tetap aman.
+                        </p>
+                    </div>
+
+                    <div class="bg-indigo-50 border-2 border-indigo-100 rounded-2xl p-5 flex flex-col gap-3">
+                        <h3 class="font-bold text-indigo-950 text-xs md:text-sm">Sama seperti Internet! Kadang kita melihat sesuatu yang:</h3>
+                        <div class="grid grid-cols-2 gap-2 text-xs font-semibold text-slate-700">
+                            <div class="bg-white p-2.5 rounded-xl border border-indigo-50 flex items-center gap-2"><span>😨</span> Membuat Takut</div>
+                            <div class="bg-white p-2.5 rounded-xl border border-indigo-50 flex items-center gap-2"><span>😣</span> Membuat Malu</div>
+                            <div class="bg-white p-2.5 rounded-xl border border-indigo-50 flex items-center gap-2"><span>🤢</span> Membuat Jijik</div>
+                            <div class="bg-white p-2.5 rounded-xl border border-indigo-50 flex items-center gap-2"><span>😢</span> Membuat Sedih</div>
+                        </div>
+                        <p class="text-[11px] text-indigo-800 font-bold bg-indigo-100/50 p-2.5 rounded-xl">
+                            💡 Itu bukan salahmu kalau muncul tanpa sengaja! Yang wajib kamu lakukan: <strong>Tutup layar, Tinggalkan, dan Ceritakan ke orang dewasa!</strong>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 9: NEW - Traffic Light Rule -->
+            <div class="slide flex-col items-center justify-center text-center gap-4 h-full">
+                <span class="text-indigo-600 font-bold text-xs tracking-wider uppercase bg-indigo-50 px-4 py-1 rounded-full border border-indigo-100">Jurus Rahasia</span>
+                <h2 class="text-2xl md:text-4xl font-extrabold text-slate-800">
+                    Aturan Lampu Lalu Lintas Internet! 🚦
+                </h2>
+                <p class="text-xs md:text-sm text-slate-500 max-w-xl">Yuk, hafalkan 3 warna ini biar kamu selalu aman berkendara di dunia digital!</p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full mt-2">
+                    <!-- Green Light -->
+                    <div class="bg-emerald-50 border-4 border-emerald-300 rounded-3xl p-4 flex flex-col items-center gap-1.5 relative">
+                        <div class="w-8 h-8 rounded-full bg-emerald-500 shadow-md flex items-center justify-center text-white font-bold text-xs">🟢</div>
+                        <h3 class="font-extrabold text-emerald-800 text-xs md:text-sm">Lampu Hijau (SANGAT BAIK)</h3>
+                        <p class="text-[10px] text-slate-600">Boleh dibuka sendiri:</p>
+                        <div class="text-[10px] bg-white rounded-lg p-2 border border-emerald-100 font-bold text-emerald-700 w-full flex flex-col gap-1">
+                            <span>📚 Situs Belajar</span>
+                            <span>🎨 Seni & Menggambar</span>
+                            <span>🧪 Eksperimen Sains</span>
+                            <span>🎭 Dongeng Lucu</span>
+                        </div>
+                    </div>
+                    <!-- Yellow Light -->
+                    <div class="bg-amber-50 border-4 border-amber-300 rounded-3xl p-4 flex flex-col items-center gap-1.5 relative">
+                        <div class="w-8 h-8 rounded-full bg-amber-500 shadow-md flex items-center justify-center text-white font-bold text-xs">🟡</div>
+                        <h3 class="font-extrabold text-amber-800 text-xs md:text-sm">Lampu Kuning (HATI-HATI)</h3>
+                        <p class="text-[10px] text-slate-600">Harus tanya orang tua:</p>
+                        <div class="text-[10px] bg-white rounded-lg p-2 border border-amber-100 font-bold text-amber-700 w-full flex flex-col gap-1">
+                            <span>📰 Berita Aneh/Heboh</span>
+                            <span>🎮 Tantangan (Challenge)</span>
+                            <span>🎁 Iklan Hadiah</span>
+                            <span>📥 Download Aplikasi</span>
+                        </div>
+                    </div>
+                    <!-- Red Light -->
+                    <div class="bg-rose-50 border-4 border-rose-300 rounded-3xl p-4 flex flex-col items-center gap-1.5 relative">
+                        <div class="w-8 h-8 rounded-full bg-rose-500 shadow-md flex items-center justify-center text-white font-bold text-xs animate-pulse">🔴</div>
+                        <h3 class="font-extrabold text-rose-800 text-xs md:text-sm">Lampu Merah (BAHAYA!)</h3>
+                        <p class="text-[10px] text-slate-600">Tutup & Jangan dibalas!</p>
+                        <div class="text-[10px] bg-white rounded-lg p-2 border border-rose-100 font-bold text-rose-700 w-full flex flex-col gap-1">
+                            <span>😨 Gambar Menakutkan</span>
+                            <span>🤢 Hal yang Bikin Jijik</span>
+                            <span>👤 Orang Asing Ajak Chat</span>
+                            <span>📸 Diminta Kirim Foto Diri</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 10: Aturan Emas 1 (Stop, Think, Click) -->
             <div class="slide flex-col items-center justify-center text-center gap-6 h-full">
                 <span class="text-amber-500 font-bold text-sm tracking-wider uppercase bg-amber-100 px-4 py-1 rounded-full border border-amber-200">Aturan Emas #1</span>
                 <h2 class="text-3xl md:text-4xl font-extrabold text-slate-800">
                     Stop, Think, Klik! 🚦
                 </h2>
                 
-                <!-- Giant traffic lights action cards -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6 w-full mt-2">
                     <div class="bg-red-50 border-4 border-red-400 rounded-3xl p-5 flex flex-col items-center gap-2 relative">
                         <span class="absolute -top-4 bg-red-500 text-white font-bold text-xs px-3 py-1 rounded-full">Langkah 1</span>
@@ -317,7 +458,7 @@
                 </div>
             </div>
 
-            <!-- Slide 8: Aturan Emas 2 (Jaga Rahasia) -->
+            <!-- Slide 11: Aturan Emas 2 (Jaga Rahasia) -->
             <div class="slide flex-col justify-center gap-6 h-full">
                 <div class="text-center">
                     <span class="text-indigo-500 font-bold text-sm tracking-wider uppercase bg-indigo-100 px-4 py-1 rounded-full border border-indigo-200">Aturan Emas #2</span>
@@ -327,7 +468,6 @@
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-2">
-                    <!-- Red Box: Secrets -->
                     <div class="bg-red-50 border-2 border-red-300 rounded-2xl p-5 flex flex-col gap-3">
                         <h3 class="font-black text-red-600 text-sm md:text-base flex items-center gap-2">
                             <i class="fa-solid fa-circle-xmark"></i> RAHASIA (Jangan Disebar!)
@@ -339,7 +479,6 @@
                         </div>
                     </div>
                     
-                    <!-- Green Box: Public Shareable -->
                     <div class="bg-emerald-50 border-2 border-emerald-300 rounded-2xl p-5 flex flex-col gap-3">
                         <h3 class="font-black text-emerald-600 text-sm md:text-base flex items-center gap-2">
                             <i class="fa-solid fa-circle-check"></i> BOLEH DIBAGIKAN
@@ -353,7 +492,89 @@
                 </div>
             </div>
 
-            <!-- Slide 9: Aturan Emas 3 (Bersikap Baik) -->
+            <!-- Slide 12: NEW - Jebakan Rahasia (Grooming Awareness) -->
+            <div class="slide flex-col justify-center gap-6 h-full">
+                <div class="text-center">
+                    <span class="text-rose-500 font-bold text-sm tracking-wider uppercase bg-rose-100 px-4 py-1 rounded-full border border-rose-200">Grooming Awareness</span>
+                    <h2 class="text-2xl md:text-4xl font-extrabold text-slate-800 mt-2">
+                        Waspada "Rahasia" Orang Asing! 🤫
+                    </h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-1 items-center">
+                    <div class="bg-indigo-50 border-2 border-indigo-200 rounded-2xl p-4 flex flex-col gap-2.5">
+                        <h3 class="font-bold text-indigo-950 text-sm md:text-base">Trik Orang Asing di Internet:</h3>
+                        <div class="flex items-center gap-3 bg-white p-2 rounded-xl border border-indigo-50">
+                            <span class="text-2xl">😊</span>
+                            <p class="text-xs text-slate-700">Tiba-tiba terlihat sangat ramah dan sok akrab.</p>
+                        </div>
+                        <div class="flex items-center gap-3 bg-white p-2 rounded-xl border border-indigo-50">
+                            <span class="text-2xl">🎁</span>
+                            <p class="text-xs text-slate-700">Memberikan hadiah atau menawarkan diamond gratis 💎.</p>
+                        </div>
+                        <div class="flex items-center gap-3 bg-white p-2 rounded-xl border border-indigo-50">
+                            <span class="text-2xl">🎮</span>
+                            <p class="text-xs text-slate-700">Mengajak bermain terus menerus secara tersembunyi.</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-rose-50 border-2 border-rose-300 rounded-2xl p-5 text-center flex flex-col items-center gap-3">
+                        <div class="w-16 h-16 rounded-full bg-rose-100 flex items-center justify-center text-4xl">🤫</div>
+                        <h4 class="font-black text-rose-800 text-sm md:text-base">"Jangan bilang Ayah dan Ibu ya..."</h4>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            Jika mendengar kalimat ini, itu adalah <strong>TANDA BAHAYA BESAR!</strong><br>
+                            Orang dewasa yang baik tidak akan pernah meminta anak untuk menyembunyikan rahasia dari orang tuanya.
+                        </p>
+                        <div class="bg-rose-600 text-white font-bold text-xs px-4 py-2 rounded-xl pulse-slow">
+                            🚩 SEGERA LAPORKAN PADA ORANG TUA!
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 13: NEW - Red Flags Orang Asing -->
+            <div class="slide flex-col justify-center gap-6 h-full">
+                <div class="text-center">
+                    <span class="text-amber-500 font-bold text-sm tracking-wider uppercase bg-amber-100 px-4 py-1 rounded-full border border-amber-200">Detektif Sinyal Bahaya</span>
+                    <h2 class="text-2xl md:text-4xl font-extrabold text-slate-800 mt-2">
+                        Sinyal Bahaya (Red Flags) 🚩
+                    </h2>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                    <div class="md:col-span-4 flex flex-col justify-center items-center bg-red-50 border-2 border-red-200 rounded-3xl p-5 text-center gap-2">
+                        <span class="text-6xl animate-bounce">🚩🚫</span>
+                        <h3 class="font-bold text-red-900 text-xs md:text-sm">TIDAK BOLEH DILANJUTKAN!</h3>
+                        <p class="text-[10px] text-slate-500">Tutup layar, cuekin chat-nya, dan langsung cari Ayah, Ibu, atau Gurumu!</p>
+                    </div>
+
+                    <div class="md:col-span-8 bg-slate-50 border border-slate-200 rounded-2xl p-4">
+                        <h4 class="font-bold text-slate-700 text-xs md:text-sm mb-2.5">Segera tolak dan lari jika ada orang di internet yang meminta:</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <div class="bg-white p-2.5 rounded-xl border border-slate-150 flex items-center gap-2 text-xs text-slate-700 font-bold">
+                                <span class="text-red-500"><i class="fa-solid fa-circle-exclamation"></i></span> Alamat rumah atau sekolah
+                            </div>
+                            <div class="bg-white p-2.5 rounded-xl border border-slate-150 flex items-center gap-2 text-xs text-slate-700 font-bold">
+                                <span class="text-red-500"><i class="fa-solid fa-circle-exclamation"></i></span> Nomor handphone (HP)
+                            </div>
+                            <div class="bg-white p-2.5 rounded-xl border border-slate-150 flex items-center gap-2 text-xs text-slate-700 font-bold">
+                                <span class="text-red-500"><i class="fa-solid fa-circle-exclamation"></i></span> Foto diri kamu
+                            </div>
+                            <div class="bg-white p-2.5 rounded-xl border border-slate-150 flex items-center gap-2 text-xs text-slate-700 font-bold">
+                                <span class="text-red-500"><i class="fa-solid fa-circle-exclamation"></i></span> Mengajak video call diam-diam
+                            </div>
+                            <div class="bg-white p-2.5 rounded-xl border border-slate-150 flex items-center gap-2 text-xs text-slate-700 font-bold">
+                                <span class="text-red-500"><i class="fa-solid fa-circle-exclamation"></i></span> Mengajak bertemu di luar
+                            </div>
+                            <div class="bg-white p-2.5 rounded-xl border border-slate-150 flex items-center gap-2 text-xs text-slate-700 font-bold">
+                                <span class="text-red-500"><i class="fa-solid fa-circle-exclamation"></i></span> Meminta rahasiakan chat
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 14: Aturan Emas 3 (Bersikap Baik) -->
             <div class="slide flex-col items-center justify-center text-center gap-6 h-full">
                 <span class="text-rose-500 font-bold text-sm tracking-wider uppercase bg-rose-100 px-4 py-1 rounded-full border border-rose-200">Aturan Emas #3</span>
                 <h2 class="text-2xl md:text-4xl font-extrabold text-slate-800">
@@ -375,7 +596,7 @@
                 </div>
             </div>
 
-            <!-- Slide 10: Aturan Emas 4 (Tidak Semua Benar) -->
+            <!-- Slide 15: Aturan Emas 4 (Tidak Semua Benar) -->
             <div class="slide flex-col justify-center gap-6 h-full">
                 <div class="text-center">
                     <span class="text-amber-500 font-bold text-sm tracking-wider uppercase bg-amber-100 px-4 py-1 rounded-full border border-amber-200">Aturan Emas #4</span>
@@ -385,7 +606,6 @@
                 </div>
                 
                 <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center mt-2">
-                    <!-- Detective Visual icon representation -->
                     <div class="md:col-span-4 flex justify-center">
                         <div class="bg-amber-100 rounded-full w-36 h-36 border-4 border-amber-400 flex items-center justify-center text-7xl float-slow">🔍🕵️‍♂️</div>
                     </div>
@@ -408,7 +628,7 @@
                 </div>
             </div>
 
-            <!-- Slide 11: Aturan Emas 5 (Bertanya / Lapor) -->
+            <!-- Slide 16: Aturan Emas 5 (Bertanya / Lapor) -->
             <div class="slide flex-col items-center justify-center text-center gap-6 h-full">
                 <span class="text-violet-500 font-bold text-sm tracking-wider uppercase bg-violet-100 px-4 py-1 rounded-full border border-violet-200">Aturan Emas #5</span>
                 <h2 class="text-2xl md:text-4xl font-extrabold text-slate-800">
@@ -437,7 +657,42 @@
                 </div>
             </div>
 
-            <!-- Slide 12: Jadilah Anak Hebat (Jejak Digital) -->
+            <!-- Slide 17: Mengenal Potensi Diri -->
+            <div class="slide flex-col items-center justify-center text-center gap-6 h-full">
+                <span class="text-indigo-500 font-bold text-sm tracking-wider uppercase bg-indigo-100 px-4 py-1 rounded-full border border-indigo-200">Kekuatan Supermu</span>
+                <h2 class="text-2xl md:text-4xl font-extrabold text-slate-800">
+                    Temukan Bakat Hebat Dirimu! ⚡🦸‍♂️
+                </h2>
+                <p class="text-slate-600 text-xs md:text-sm max-w-xl">Sebelum mulai berbagi di internet, yuk cari tahu potensi hebat apa saja yang bisa kamu kembangkan!</p>
+                
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 w-full max-w-4xl">
+                    <div class="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 flex flex-col items-center gap-2 transform hover:scale-105 transition-all cursor-pointer">
+                        <span class="text-4xl">🎨</span>
+                        <h4 class="font-bold text-amber-800 text-xs md:text-sm">Seni & Desain</h4>
+                        <p class="text-[10px] text-slate-500">Suka menggambar, mewarnai, origami, kerajinan tangan.</p>
+                    </div>
+                    <div class="bg-sky-50 border-2 border-sky-200 rounded-2xl p-4 flex flex-col items-center gap-2 transform hover:scale-105 transition-all cursor-pointer">
+                        <span class="text-4xl">🎤</span>
+                        <h4 class="font-bold text-sky-800 text-xs md:text-sm">Musik & Pidato</h4>
+                        <p class="text-[10px] text-slate-500">Bernyanyi, mendongeng, atau menceritakan kisah lucu.</p>
+                    </div>
+                    <div class="bg-emerald-50 border-2 border-emerald-200 rounded-2xl p-4 flex flex-col items-center gap-2 transform hover:scale-105 transition-all cursor-pointer">
+                        <span class="text-4xl">🧩</span>
+                        <h4 class="font-bold text-emerald-800 text-xs md:text-sm">Logika & Sains</h4>
+                        <p class="text-[10px] text-slate-500">Senang memecahkan teka-teki, belajar sains, atau angka.</p>
+                    </div>
+                    <div class="bg-rose-50 border-2 border-rose-200 rounded-2xl p-4 flex flex-col items-center gap-2 transform hover:scale-105 transition-all cursor-pointer">
+                        <span class="text-4xl">🏃‍♂️</span>
+                        <h4 class="font-bold text-rose-800 text-xs md:text-sm">Gerak & Olahraga</h4>
+                        <p class="text-[10px] text-slate-500">Bakat menari, senam olahraga, maupun aktivitas aktif.</p>
+                    </div>
+                </div>
+                <p class="text-xs text-indigo-700 font-bold bg-indigo-50 border border-indigo-200 px-4 py-2 rounded-full">
+                    💡 "Gunakan internet sehat untuk mengasah kekuatan super unikmu itu!"
+                </p>
+            </div>
+
+            <!-- Slide 18: Jadilah Anak Hebat (Jejak Digital) -->
             <div class="slide flex-col items-center justify-center text-center gap-6 h-full">
                 <h2 class="text-2xl md:text-4xl font-extrabold text-slate-800">
                     Buat Jejak Kerenmu di Internet! 👣
@@ -463,7 +718,7 @@
                 </div>
             </div>
 
-            <!-- Slide 13: Internet & Masa Depan -->
+            <!-- Slide 19: Internet & Masa Depan -->
             <div class="slide flex-col justify-center gap-6 h-full">
                 <h2 class="text-2xl md:text-4xl font-extrabold text-indigo-700 border-b-4 border-indigo-400 pb-2">
                     🚀 Menjemput Impian Masa Depan
@@ -489,12 +744,12 @@
                     <div class="bg-amber-50 border-2 border-amber-300 rounded-2xl p-5 text-center">
                         <span class="text-5xl float-slow inline-block">👑</span>
                         <h3 class="font-bold text-amber-900 text-sm md:text-base mt-2">Kunci Sukses Sebenarnya</h3>
-                        <p class="text-xs md:text-sm text-slate-600 mt-1">"Bukan karena viral semata, melainkan karena kamu berilmu, bertalenta, dan memiliki akhlak yang baik!"</p>
+                        <p class="text-xs md:text-sm text-slate-600 mt-1">"Bukan karena sekadar viral, melainkan karena kamu berilmu, bertalenta, dan memiliki akhlak yang baik!"</p>
                     </div>
                 </div>
             </div>
 
-            <!-- Slide 14: Game Time Intro -->
+            <!-- Slide 20: Game Time Intro -->
             <div class="slide flex-col items-center justify-center text-center gap-6 h-full">
                 <div class="text-7xl animate-bounce">🎮🌟🏆</div>
                 <h2 class="text-3xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-600">
@@ -503,26 +758,23 @@
                 <p class="text-slate-600 font-bold text-sm md:text-base max-w-lg leading-relaxed">
                     Ayo uji kehebatanmu sebagai <strong class="text-indigo-600">Detektif Digital</strong>. Tebak setiap situasi: AMAN atau BAHAYA?
                 </p>
-                <button onclick="goToSlide(15)" class="bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-extrabold text-base md:text-lg px-8 py-3.5 rounded-full shadow-lg hover:shadow-indigo-500/30 transform hover:-translate-y-1 transition-all">
+                <button onclick="goToSlide(21)" class="bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-extrabold text-base md:text-lg px-8 py-3.5 rounded-full shadow-lg hover:shadow-indigo-500/30 transform hover:-translate-y-1 transition-all">
                     Ayo Mulai Main! 🚀
                 </button>
             </div>
 
-            <!-- Slide 15: Game Tantangan Detektif Digital (INTERACTIVE MINI GAME) -->
+            <!-- Slide 21: Game Tantangan Detektif Digital -->
             <div class="slide flex-col items-center justify-center gap-4 h-full">
                 <h2 class="text-xl md:text-3xl font-extrabold text-slate-800 text-center">
                     Tantangan Detektif Digital 🔎
                 </h2>
                 
-                <!-- Game Card Container -->
                 <div class="bg-indigo-50/70 border-4 border-indigo-200 rounded-3xl p-5 md:p-6 w-full max-w-2xl mx-auto shadow-md relative min-h-[220px] flex flex-col justify-between">
-                    <!-- Progress Step inside game -->
                     <div class="flex justify-between items-center text-xs font-bold text-indigo-700 border-b border-indigo-200 pb-2 mb-2">
                         <span>TANTANGAN SOAL <span id="game-step">1</span> / 4</span>
                         <span id="score-text" class="bg-indigo-200 px-3 py-1 rounded-full">Skor: 0</span>
                     </div>
 
-                    <!-- Scenario Display -->
                     <div id="game-scenario-area" class="text-center py-4 flex flex-col items-center justify-center gap-3">
                         <span id="game-emoji" class="text-6xl float-slow">👤</span>
                         <p id="game-question" class="font-extrabold text-slate-800 text-sm md:text-base leading-relaxed">
@@ -530,7 +782,6 @@
                         </p>
                     </div>
 
-                    <!-- Interactive Action Buttons -->
                     <div class="grid grid-cols-2 gap-4 mt-2">
                         <button onclick="handleGameAnswer('Aman')" class="bg-emerald-500 hover:bg-emerald-600 text-white font-black py-3 rounded-2xl shadow-md border-b-4 border-emerald-700 active:border-b-0 hover:scale-[1.02] transition-all text-xs md:text-sm">
                             🟢 AMAN
@@ -540,7 +791,7 @@
                         </button>
                     </div>
 
-                    <!-- Custom feedback banner instead of alert -->
+                    <!-- Game Feedback Overlay -->
                     <div id="game-feedback" class="absolute inset-0 bg-white/95 rounded-[24px] hidden flex-col items-center justify-center p-6 text-center z-10 transition-all">
                         <span id="feedback-emoji" class="text-6xl mb-2">🎉</span>
                         <h4 id="feedback-title" class="font-black text-xl text-emerald-600">Jawaban Tepat!</h4>
@@ -552,7 +803,50 @@
                 </div>
             </div>
 
-            <!-- Slide 16: Ringkasan 5 Aturan Emas -->
+            <!-- Slide 22: Hak, Kewajiban & Kebebasan Berpendapat -->
+            <div class="slide flex-col justify-center gap-6 h-full">
+                <div class="text-center">
+                    <span class="text-rose-500 font-bold text-sm tracking-wider uppercase bg-rose-100 px-4 py-1 rounded-full border border-rose-200">Suaramu Berharga</span>
+                    <h2 class="text-2xl md:text-4xl font-extrabold text-slate-800 mt-2">
+                        Bicara Bebas Tapi Aman! 📢⚖️
+                    </h2>
+                </div>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-1">
+                    <div class="bg-sky-50 border-2 border-sky-300 rounded-3xl p-5 flex flex-col gap-3">
+                        <h3 class="font-black text-sky-800 text-sm md:text-base flex items-center gap-2">
+                            <span>📢</span> HAK KITA & ORANG LAIN
+                        </h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            "Kita punya <strong>HAK</strong> untuk mengekspresikan diri dan opini kita, dan orang lain pun punya <strong>HAK</strong> untuk mengomentarinya secara sehat."
+                        </p>
+                        <div class="bg-white/80 p-2.5 rounded-xl text-[11px] text-sky-950 font-medium">
+                            💬 Kita bebas membuat postingan kreatif, dan kawan-kawan pun berhak memberi masukan yang membangun.
+                        </div>
+                    </div>
+                    
+                    <div class="bg-indigo-50 border-2 border-indigo-300 rounded-3xl p-5 flex flex-col gap-3">
+                        <h3 class="font-black text-indigo-800 text-sm md:text-base flex items-center gap-2">
+                            <span>🛡️</span> KEWAJIBAN KITA
+                        </h3>
+                        <p class="text-xs text-slate-600 leading-relaxed">
+                            "Orang lain pun punya <strong>HAK</strong> untuk mengekspresikan diri dan opininya, dan kita punya <strong>KEWAJIBAN</strong> untuk menyaring informasi tersebut."
+                        </p>
+                        <div class="bg-white/80 p-2.5 rounded-xl text-[11px] text-indigo-950 font-medium">
+                            🔍 Saring sebelum sharing! Kita harus cerdas memilah informasi yang benar dari ejekan atau hasutan yang buruk.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-rose-500 to-amber-500 text-white rounded-2xl p-4 text-center">
+                    <h4 class="font-bold text-xs md:text-sm uppercase tracking-wider mb-1">📢 Aturan Utama Berpendapat:</h4>
+                    <p class="text-xs md:text-sm font-semibold">
+                        "Bebas berpendapat (*Freedom of Speech*) itu <strong>BUKAN</strong> berarti bebas mengejek atau berkata kasar (*Hateful Speech*). Berbagilah hal baik!"
+                    </p>
+                </div>
+            </div>
+
+            <!-- Slide 23: Ringkasan 5 Aturan Emas -->
             <div class="slide flex-col items-center justify-center text-center gap-6 h-full">
                 <h2 class="text-2xl md:text-4xl font-extrabold text-slate-800 border-b-4 border-indigo-400 pb-2">
                     Ingat Selalu 5 Aturan Emas! 🖐️
@@ -587,7 +881,7 @@
                 </div>
             </div>
 
-            <!-- Slide 17: Penutup -->
+            <!-- Slide 24: Penutup -->
             <div class="slide flex-col items-center justify-center text-center gap-6 h-full">
                 <div class="relative">
                     <span class="text-8xl float-slow inline-block">👑</span>
@@ -602,7 +896,7 @@
                 </p>
                 
                 <div class="bg-indigo-50 border border-indigo-200 px-6 py-3 rounded-full text-indigo-700 font-bold text-xs md:text-sm">
-                    ❤️ Terima kasih anak hebat, selamat menjelajah dunia!
+                    ❤️ Terima kasih anak hebat, selamat menjelajah dunia dengan bijak!
                 </div>
             </div>
 
@@ -610,28 +904,28 @@
 
         <!-- Interactive Slide Control Actions -->
         <footer class="w-full bg-slate-50 border-t-2 border-slate-100 py-4 px-6 md:px-8 flex items-center justify-between z-10">
-            <button onclick="prevSlide()" class="bg-white border-2 border-slate-200 hover:bg-slate-50 text-slate-700 font-bold px-6 py-2.5 rounded-full transition-all shadow-sm active:scale-95 text-xs md:text-sm">
-                <i class="fa-solid fa-arrow-left mr-2"></i> Sebelumnya
+            <button onclick="prevSlide()" class="bg-white border-2 border-slate-200 hover:bg-slate-50 text-slate-700 font-bold px-6 py-2.5 rounded-2xl transition-all shadow-sm active:scale-95 text-xs md:text-sm flex items-center gap-2">
+                <i class="fa-solid fa-arrow-left"></i> Sebelumnya
             </button>
             <div class="hidden sm:flex gap-1.5" id="dots-progress">
                 <!-- Javascript will render dots indicator -->
             </div>
-            <button id="next-btn" onclick="nextSlide()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-2.5 rounded-full shadow-md active:scale-95 transition-all text-xs md:text-sm">
-                Lanjut <i class="fa-solid fa-arrow-right ml-2"></i>
+            <button id="next-btn" onclick="nextSlide()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-6 py-2.5 rounded-2xl shadow-md active:scale-95 transition-all text-xs md:text-sm flex items-center gap-2">
+                Lanjut <i class="fa-solid fa-arrow-right"></i>
             </button>
         </footer>
 
     </main>
 
-    <!-- Presentation Hints for classrooms -->
-    <p class="text-center text-[10px] md:text-xs text-slate-500 max-w-md mx-auto my-1 leading-snug">
-        💡 <strong>Tips Presentasi:</strong> Gunakan tombol arah <kbd class="px-1.5 py-0.5 bg-white rounded shadow text-slate-700">←</kbd> <kbd class="px-1.5 py-0.5 bg-white rounded shadow text-slate-700">→</kbd> pada keyboard atau geser layar untuk mengganti slide show.
+    <!-- Presentation Hints -->
+    <p id="raw-hints" class="text-center text-[10px] md:text-xs text-indigo-950/60 max-w-xl mx-auto my-1 leading-snug transition-all">
+        💡 <strong>Tips Presentasi:</strong> Gunakan tombol arah <kbd class="px-1.5 py-0.5 bg-white rounded shadow text-slate-700">←</kbd> <kbd class="px-1.5 py-0.5 bg-white rounded shadow text-slate-700">→</kbd> pada keyboard atau geser layar untuk mengganti slide. <strong>Tekan tombol "F" di keyboard untuk masuk/keluar Mode Presentasi Layar Penuh!</strong>
     </p>
 
     <!-- Logic Script Section -->
     <script>
         let currentSlide = 1;
-        const totalSlides = 17;
+        const totalSlides = 24;
 
         // Interactive Game states
         let currentGameStep = 1;
@@ -682,7 +976,7 @@
             dotsContainer.innerHTML = '';
             for(let i=1; i<=totalSlides; i++) {
                 const dot = document.createElement('div');
-                dot.className = `w-2 h-2 rounded-full cursor-pointer transition-all ${i === 1 ? 'bg-indigo-600 w-4' : 'bg-slate-300'}`;
+                dot.className = `w-2.5 h-2.5 rounded-full cursor-pointer transition-all ${i === 1 ? 'bg-indigo-600 w-5' : 'bg-slate-300'}`;
                 dot.setAttribute('onclick', `goToSlide(${i})`);
                 dot.setAttribute('id', `dot-${i}`);
                 dotsContainer.appendChild(dot);
@@ -691,7 +985,6 @@
 
         // Slide Show Navigation Engine
         function updateSlideUI() {
-            // Manage Slide visibility
             const slides = document.querySelectorAll('.slide');
             slides.forEach((slide, index) => {
                 if(index + 1 === currentSlide) {
@@ -711,9 +1004,9 @@
                 const dot = document.getElementById(`dot-${i}`);
                 if (dot) {
                     if (i === currentSlide) {
-                        dot.className = 'w-2 h-2 rounded-full cursor-pointer transition-all bg-indigo-600 w-4';
+                        dot.className = 'w-2.5 h-2.5 rounded-full cursor-pointer transition-all bg-indigo-600 w-5';
                     } else {
-                        dot.className = 'w-2 h-2 rounded-full cursor-pointer transition-all bg-slate-300';
+                        dot.className = 'w-2.5 h-2.5 rounded-full cursor-pointer transition-all bg-slate-300';
                     }
                 }
             }
@@ -721,9 +1014,9 @@
             // Lock/Unlock NEXT footer button style on end
             const nextBtn = document.getElementById('next-btn');
             if (currentSlide === totalSlides) {
-                nextBtn.innerHTML = 'Mulai Lagi <i class="fa-solid fa-rotate-right ml-2"></i>';
+                nextBtn.innerHTML = 'Mulai Lagi <i class="fa-solid fa-rotate-right ml-1"></i>';
             } else {
-                nextBtn.innerHTML = 'Lanjut <i class="fa-solid fa-arrow-right ml-2"></i>';
+                nextBtn.innerHTML = 'Lanjut <i class="fa-solid fa-arrow-right ml-1"></i>';
             }
         }
 
@@ -732,7 +1025,6 @@
                 currentSlide++;
                 updateSlideUI();
             } else {
-                // Restart presentation on end
                 currentSlide = 1;
                 resetMiniGame();
                 updateSlideUI();
@@ -751,18 +1043,26 @@
             updateSlideUI();
         }
 
-        // Add keyboard arrows accessibility support
+        // Toggle Fullscreen / Presentation Mode
+        function togglePresentationMode() {
+            const body = document.body;
+            body.classList.toggle('presentation-active');
+        }
+
+        // Keyboard controls (Arrows & 'F' Presentation Mode Key)
         function setupKeyboardControls() {
             document.addEventListener('keydown', function(event) {
-                if (event.key === 'ArrowRight') {
+                if (event.key === 'ArrowRight' || event.key === 'Space') {
                     nextSlide();
                 } else if (event.key === 'ArrowLeft') {
                     prevSlide();
+                } else if (event.key.toLowerCase() === 'f') {
+                    togglePresentationMode();
                 }
             });
         }
 
-        // Add mobile touch/swipe accessibility support
+        // Touch Gestures
         function setupTouchGestures() {
             let touchStartX = 0;
             let touchEndX = 0;
@@ -779,10 +1079,10 @@
 
             function handleSwipe() {
                 if (touchEndX < touchStartX - 50) {
-                    nextSlide(); // swipe left -> next
+                    nextSlide();
                 }
                 if (touchEndX > touchStartX + 50) {
-                    prevSlide(); // swipe right -> prev
+                    prevSlide();
                 }
             }
         }
@@ -813,7 +1113,6 @@
                 feedbackTitle.className = "font-black text-xl text-emerald-600";
                 feedbackDesc.innerText = currentData.okDesc;
                 
-                // Trigger beautiful confetti burst reward!
                 confetti({
                     particleCount: 80,
                     spread: 60,
@@ -842,7 +1141,6 @@
                 currentGameStep++;
                 loadGameQuestion();
             } else {
-                // Game Finished reward popup
                 const feedbackModal = document.getElementById('game-feedback');
                 const feedbackEmoji = document.getElementById('feedback-emoji');
                 const feedbackTitle = document.getElementById('feedback-title');
@@ -854,7 +1152,6 @@
                 feedbackTitle.className = "font-black text-2xl text-indigo-600";
                 feedbackDesc.innerText = "Kamu sudah resmi dilantik menjadi Detektif Digital yang Cerdas & Hebat!";
                 
-                // Mega confetti reward
                 confetti({
                     particleCount: 150,
                     spread: 100,
@@ -863,7 +1160,7 @@
 
                 nextBtn.innerText = "Lanjut Presentasi";
                 nextBtn.onclick = function() {
-                    nextSlide(); // go to slide 16
+                    nextSlide();
                 }
             }
         }
