@@ -179,7 +179,7 @@
         <div class="flex items-center gap-3">
             <!-- Progress badge -->
             <div class="text-xs font-bold bg-indigo-50 text-indigo-600 px-3.5 py-2 rounded-2xl border border-indigo-100">
-                Slide <span id="current-slide-badge">1</span> / 24
+                Slide <span id="current-slide-badge">1</span> / 27
             </div>
             <!-- Progress Line Indicator -->
             <div class="w-20 md:w-28 bg-slate-100 rounded-full h-2.5 overflow-hidden border border-slate-200">
@@ -986,14 +986,14 @@
                 </div>
             </div>
 
-             <!-- Slide 25: Quiz Refleksi 1 -->
+            <!-- Slide 25: Quiz Refleksi 1 -->
             <div class="slide flex-col items-center justify-center text-center gap-6 h-full">
                 <span class="text-amber-500 font-bold text-sm tracking-wider uppercase bg-amber-100 px-4 py-1 rounded-full border border-amber-200">Quiz Refleksi #1</span>
                 <div class="text-7xl float-slow">🚫📱</div>
                 <h2 class="text-2xl md:text-4xl font-extrabold text-slate-800 leading-tight max-w-3xl">
                     Sebutkan 3 hal yang tidak boleh dilakukan di media sosial!
                 </h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl">
+                <!-- <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl">
                     <div class="bg-rose-50 border-2 border-rose-200 rounded-2xl p-4 flex flex-col items-center gap-2">
                         <span class="text-4xl">🔐</span>
                         <p class="font-bold text-rose-800 text-xs md:text-sm">Membagikan data pribadi</p>
@@ -1006,9 +1006,9 @@
                         <span class="text-4xl">👤</span>
                         <p class="font-bold text-purple-800 text-xs md:text-sm">Menjawab ajakan orang asing</p>
                     </div>
-                </div>
+                </div> -->
                 <p class="text-xs md:text-sm text-indigo-700 font-bold bg-indigo-50 border border-indigo-200 px-5 py-2 rounded-full">
-                    🎤 Ayo jawab bergantian dengan suara lantang!
+                    🎤 Ayo yang berani jawab, angkat tangannya setinggi-tinggi nya!
                 </p>
             </div>
 
@@ -1019,13 +1019,23 @@
                 <h2 class="text-2xl md:text-4xl font-extrabold text-slate-800 leading-tight max-w-3xl">
                     Sebutkan 3 contoh komentar positif di media sosial!
                 </h2>
-                <div class="bg-emerald-50 border-2 border-emerald-200 rounded-3xl p-5 w-full max-w-3xl flex flex-col gap-3">
+                <!-- <div class="bg-emerald-50 border-2 border-emerald-200 rounded-3xl p-5 w-full max-w-3xl flex flex-col gap-3">
                     <div class="bg-white rounded-2xl p-3 border border-emerald-100 font-bold text-emerald-800 text-sm md:text-base">“Karyamu bagus sekali!”</div>
                     <div class="bg-white rounded-2xl p-3 border border-emerald-100 font-bold text-emerald-800 text-sm md:text-base">“Semangat terus ya!”</div>
                     <div class="bg-white rounded-2xl p-3 border border-emerald-100 font-bold text-emerald-800 text-sm md:text-base">“Terima kasih sudah berbagi informasi.”</div>
-                </div>
-                <p class="text-xs md:text-sm text-slate-600 font-semibold">
+                </div> -->
+                <!-- <p class="text-xs md:text-sm text-slate-600 font-semibold">
                     Gunakan kata yang sopan, mendukung, dan tidak menyakiti teman.
+                </p> -->
+
+                <!-- <button onclick="showAnswer()" 
+                class="bg-emerald-500 text-white px-4 py-2 rounded-xl">
+                    💡
+                </button> -->
+
+                <p id="positive-comment-desc"
+                class="opacity-0 translate-y-4 transition-all duration-500 text-xs md:text-sm text-slate-600 font-semibold">
+                Gunakan kata yang sopan, mendukung, dan tidak menyakiti teman.
                 </p>
             </div>
 
@@ -1036,7 +1046,7 @@
                 <h2 class="text-2xl md:text-4xl font-extrabold text-slate-800 leading-tight max-w-3xl">
                     Apa yang harus kalian lakukan kalau menerima pesan dari orang yang tidak dikenal?
                 </h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl">
+                <!-- <div class="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-4xl">
                     <div class="bg-rose-50 border-2 border-rose-200 rounded-2xl p-4 flex flex-col items-center gap-2">
                         <span class="text-4xl">⛔</span>
                         <h3 class="font-extrabold text-rose-800 text-xs md:text-sm">Jangan dibalas</h3>
@@ -1049,11 +1059,12 @@
                         <span class="text-4xl">👨‍👩‍👧</span>
                         <h3 class="font-extrabold text-sky-800 text-xs md:text-sm">Lapor orang tua/guru</h3>
                     </div>
-                </div>
-                <div class="bg-gradient-to-r from-rose-500 to-amber-500 text-white rounded-2xl px-6 py-3 text-sm md:text-base font-extrabold shadow-md">
+                </div> -->
+                <!-- <div class="bg-gradient-to-r from-rose-500 to-amber-500 text-white rounded-2xl px-6 py-3 text-sm md:text-base font-extrabold shadow-md">
                     Ingat: anak berani adalah anak yang mau bercerita! 🛡️
-                </div>
+                </div> -->
             </div>
+
 
         </div>
 
@@ -1094,7 +1105,7 @@
     <!-- Logic Script Section -->
     <script>
         let currentSlide = 1;
-        const totalSlides = 24;
+        const totalSlides = 27;
 
         // Interactive Game states
         let currentGameStep = 1;
@@ -1350,6 +1361,13 @@
                 nextGameQuestion();
             };
             loadGameQuestion();
+        }
+
+        function showAnswer(){
+            const desc = document.getElementById("positive-comment-desc");
+
+            desc.classList.remove("opacity-0","translate-y-4");
+            desc.classList.add("opacity-100","translate-y-0");
         }
     </script>
 </body>
