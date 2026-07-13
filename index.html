@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Petualangan Digital Anak Hebat!</title>
     <!-- Google Fonts: Comfortaa & Fredoka -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -94,10 +93,10 @@
         body.presentation-active #presentation-logo {
             display: block;
             position: absolute;
-            top: -25px;
+            top: -20px;
             left: 50%;
             transform: translateX(-50%);
-            width: 300px;
+            width: 200px;
             height: auto;
             z-index: 10001;
         }
@@ -126,6 +125,43 @@
             box-shadow: none !important;
             z-index: 9999;
             background: linear-gradient(rgba(248, 250, 255, .68), rgba(248, 250, 255, .68)), url('bg2.svg') center center / cover no-repeat !important;
+        }
+
+        /* Footer Credit Non Presentation */
+        #credit-footer {
+            width: 100%;
+            max-width: 1200px;
+            margin: 10px auto 0;
+            padding: 10px 20px;
+
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+
+            font-size: 12px;
+            color: #64748b;
+
+            background: rgba(255,255,255,.7);
+            border-top: 2px dashed #f2d28a;
+            border-radius: 15px;
+
+            backdrop-filter: blur(10px);
+        }
+
+        #credit-footer strong {
+            color: #167d73;
+        }
+
+        .social-credit {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+
+        /* Hilang saat presentasi */
+        body.presentation-active #credit-footer {
+            display:none !important;
         }
     </style>
 </head>
@@ -953,6 +989,20 @@
         </div>
 
         <!-- Interactive Slide Control Actions -->
+        <footer id="credit-footer">
+            <div>
+                <strong>Dibuat oleh: </strong>Kelompok 89 KKN Unsika Desa Sumbersari | © 2026
+            </div>
+
+            <div class="social-credit">
+                <i class="fa-brands fa-instagram"></i>
+                @kknsumbersari.2026
+                &nbsp; • &nbsp;
+              <i class="fa-brands fa-tiktok"></i>
+                @kknsumbersari.2026
+            </div>
+        </footer>
+
         <footer class="w-full bg-slate-50 border-t-2 border-slate-100 py-4 px-6 md:px-8 flex items-center justify-between z-10">
             <button onclick="prevSlide()" class="bg-white border-2 border-slate-200 hover:bg-slate-50 text-slate-700 font-bold px-6 py-2.5 rounded-2xl transition-all shadow-sm active:scale-95 text-xs md:text-sm flex items-center gap-2">
                 <i class="fa-solid fa-arrow-left"></i> Sebelumnya
